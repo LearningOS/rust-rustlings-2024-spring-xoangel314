@@ -3,7 +3,7 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -43,7 +43,7 @@ impl<T> BinarySearchTree<T>
 where
     T: Ord,
 {
-
+    
     fn new() -> Self {
         BinarySearchTree { root: None }
     }
@@ -51,12 +51,47 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+        match self.root {
+            Some(ref mut node) => {
+                if value < node.value {
+                    if let Some(ref mut left) = node.left {
+                        left.insert(value);
+                    } else {
+                        node.left = Some(Box::new(TreeNode::new(value)));
+                    }
+                } else if value > node.value {
+                    if let Some(ref mut right) = node.right {
+                        right.insert(value);
+                    } else {
+                        node.right = Some(Box::new(TreeNode::new(value)));
+                    }
+                }
+            }
+            None => {
+                self.root = Some(Box::new(TreeNode::new(value)));
+            }
+        }
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+        self.search_helper(self.root.as_ref().map(|node| &**node), value)
+    }
+
+    fn search_helper(&self, node: Option<&TreeNode<T>>, value: T) -> bool {
+        match node {
+            Some(n) => {
+                if value == n.value {
+                    return true;
+                } else if value < n.value {
+                    self.search_helper(n.left.as_ref().map(|node| &**node), value)
+                } else {
+                    self.search_helper(n.right.as_ref().map(|node| &**node), value)
+                }
+            }
+            None => false,
+        }
     }
 }
 
@@ -67,8 +102,22 @@ where
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
         //TODO
+        if value < self.value {
+            if let Some(ref mut left) = self.left {
+                left.insert(value);
+            } else {
+                self.left = Some(Box::new(TreeNode::new(value)));
+            }
+        } else if value > self.value {
+            if let Some(ref mut right) = self.right {
+                right.insert(value);
+            } else {
+                self.right = Some(Box::new(TreeNode::new(value)));
+            }
+        }
     }
 }
+
 
 
 #[cfg(test)]

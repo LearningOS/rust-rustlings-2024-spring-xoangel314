@@ -10,7 +10,7 @@
 //
 // Execute `rustlings hint rc1` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
+
 
 use std::rc::Rc;
 
@@ -59,23 +59,21 @@ fn main() {
     println!("reference count = {}", Rc::strong_count(&sun)); // 6 references
     jupiter.details();
 
-    // TODO
-    let saturn = Planet::Saturn(Rc::new(Sun {}));
+    let saturn = Planet::Saturn(Rc::clone(&sun));
     println!("reference count = {}", Rc::strong_count(&sun)); // 7 references
     saturn.details();
 
-    // TODO
-    let uranus = Planet::Uranus(Rc::new(Sun {}));
+    let uranus = Planet::Uranus(Rc::clone(&sun));
     println!("reference count = {}", Rc::strong_count(&sun)); // 8 references
     uranus.details();
 
-    // TODO
-    let neptune = Planet::Neptune(Rc::new(Sun {}));
+    let neptune = Planet::Neptune(Rc::clone(&sun));
     println!("reference count = {}", Rc::strong_count(&sun)); // 9 references
     neptune.details();
 
     assert_eq!(Rc::strong_count(&sun), 9);
 
+    // 显式地 `drop` 行星，减少对 sun 的引用
     drop(neptune);
     println!("reference count = {}", Rc::strong_count(&sun)); // 8 references
 
@@ -91,14 +89,20 @@ fn main() {
     drop(mars);
     println!("reference count = {}", Rc::strong_count(&sun)); // 4 references
 
-    // TODO
-    println!("reference count = {}", Rc::strong_count(&sun)); // 3 references
+    // 由于 earth 和 venus 是在作用域内剩余的，它们将在作用域结束时自动 `drop`
+    // 但是，为了测试的目的，我们显式地 `drop` 它们
+    drop(earth);
+    drop(venus);
 
-    // TODO
+    // 此时，只剩下 mercury 对 sun 的引用
     println!("reference count = {}", Rc::strong_count(&sun)); // 2 references
 
-    // TODO
+    // 显式地 `drop` mercury
+    drop(mercury);
     println!("reference count = {}", Rc::strong_count(&sun)); // 1 reference
 
+    // 断言 sun 的引用计数为 1，因为只剩下 sun 一个引用了
     assert_eq!(Rc::strong_count(&sun), 1);
+
+    // 当 main 函数结束时，sun 将自动离开作用域并 `drop`
 }

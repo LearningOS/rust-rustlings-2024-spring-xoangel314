@@ -16,18 +16,26 @@
 //
 // Execute `rustlings hint quiz3` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
 
-pub struct ReportCard {
+
+pub struct ReportCard 
+{
     pub grade: f32,
     pub student_name: String,
     pub student_age: u8,
+    pub letter_grade: Option<String>,
 }
 
-impl ReportCard {
+impl ReportCard 
+{
     pub fn print(&self) -> String {
+        let binding = self.grade.to_string(); // Create a longer lived binding
+        let grade_string = match self.letter_grade.as_ref() {
+            Some(grade) => grade,
+            None => &binding,
+        };
         format!("{} ({}) - achieved a grade of {}",
-            &self.student_name, &self.student_age, &self.grade)
+            &self.student_name, &self.student_age, grade_string)
     }
 }
 
@@ -41,6 +49,7 @@ mod tests {
             grade: 2.1,
             student_name: "Tom Wriggle".to_string(),
             student_age: 12,
+            letter_grade: None,
         };
         assert_eq!(
             report_card.print(),
@@ -55,6 +64,7 @@ mod tests {
             grade: 2.1,
             student_name: "Gary Plotter".to_string(),
             student_age: 11,
+            letter_grade: Some("A+".to_string()),
         };
         assert_eq!(
             report_card.print(),

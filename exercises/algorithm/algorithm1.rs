@@ -2,11 +2,11 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
-use std::vec::*;
+//use std::vec::*;
 
 #[derive(Debug)]
 struct Node<T> {
@@ -69,15 +69,51 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+	pub fn merge(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>) -> Self
+where
+    T: std::cmp::PartialOrd + Copy,
+{
+    let mut merged_list = LinkedList::new();
+
+    let mut node_a = list_a.start;
+    let mut node_b = list_b.start;
+
+    while let (Some(mut a), Some(mut b)) = (node_a, node_b) {
+        if unsafe { a.as_ref() }.val <= unsafe { b.as_ref() }.val {
+            let next = unsafe { a.as_mut() }.next.take();
+            unsafe {
+                merged_list.add((*a.as_ref()).val);
+            }
+            node_a = next;
+        } else {
+            let next = unsafe { b.as_mut() }.next.take();
+            unsafe {
+                merged_list.add((*b.as_ref()).val);
+            }
+            node_b = next;
         }
-	}
+    }
+
+    while let Some(mut a) = node_a {
+        let next = unsafe { a.as_mut() }.next.take();
+        unsafe {
+            merged_list.add((*a.as_ref()).val);
+        }
+        node_a = next;
+    }
+
+    while let Some(mut b) = node_b {
+        let next = unsafe { b.as_mut() }.next.take();
+        unsafe {
+            merged_list.add((*b.as_ref()).val);
+        }
+        node_b = next;
+    }
+
+    merged_list
+}
+
+    
 }
 
 impl<T> Display for LinkedList<T>
